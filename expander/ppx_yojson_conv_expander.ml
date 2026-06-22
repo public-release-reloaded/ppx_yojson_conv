@@ -38,7 +38,7 @@ module Fun_or_match = struct
   let expr ~loc t =
     match t with
     | Fun f -> f
-    | Match cases -> pexp_function ~loc cases
+    | Match cases -> pexp_function_cases ~loc cases
   ;;
 
   let unroll ~loc e t =
@@ -962,7 +962,7 @@ module Str_generate_yojson_of = struct
         (* Prevent violation of value restriction and problems with recursive types by
            eta-expanding function definitions *)
         | Fun fun_expr -> [%expr fun v -> [%e eapply ~loc fun_expr [ [%expr v] ]]]
-        | Match matchings -> pexp_function ~loc matchings)
+        | Match matchings -> pexp_function_cases ~loc matchings)
     in
     let typ = Sig_generate_yojson_of.mk_type td in
     let func_name = "yojson_of_" ^ type_name in
@@ -1605,7 +1605,7 @@ module Str_generate_of_yojson = struct
       [%expr
         let rec iter =
           [%e
-            pexp_function
+            pexp_function_cases
               ~loc
               [ [%pat? (field_name, _field_yojson) :: tail]
                 --> [%expr
@@ -1851,7 +1851,7 @@ module Str_generate_of_yojson = struct
       (* Prevent violation of value restriction and problems with recursive types by
          eta-expanding function definitions *)
       | Fun fun_expr -> [%expr fun t -> [%e eapply ~loc fun_expr [ [%expr t] ]]]
-      | Match matchings -> pexp_function ~loc matchings
+      | Match matchings -> pexp_function_cases ~loc matchings
     in
     let external_name = type_name ^ "_of_yojson" in
     let internal_name = "__" ^ type_name ^ "_of_yojson__" in
